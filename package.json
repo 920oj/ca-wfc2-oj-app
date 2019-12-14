@@ -1,0 +1,18 @@
+{
+  "name": "ca-wfc2-oj-app",
+  "version": "1.0.0",
+  "description": "Manga App for CA Web Frontend Challenge Vol 2",
+  "author": "Junya Oiwa",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "nuxt": "^2.0.0",
+    "@nuxtjs/axios": "^5.3.6"
+  },
+  "devDependencies": {}
+}
