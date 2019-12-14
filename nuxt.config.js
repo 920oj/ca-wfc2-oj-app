@@ -28,6 +28,8 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
+    '~/plugins/vue-lazyload.js',
+    '~/plugins/vue2-touch-events.js'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -40,6 +42,7 @@ export default {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    'bootstrap-vue/nuxt'
   ],
   /*
   ** Axios module configuration
@@ -56,5 +59,8 @@ export default {
     */
     extend (config, ctx) {
     }
+  },
+  server: {
+    port: 3333,
   }
 }
