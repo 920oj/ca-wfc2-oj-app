@@ -34,7 +34,7 @@ export default {
     titleBox,
   },
   async asyncData({ $axios }) {
-    const all = await $axios.get("http://wfc2-image-api-259809.appspot.com/api/series/");
+    const all = await $axios.get("https://wfc2-image-api-259809.appspot.com/api/series/");
     return {series: all.data};
   }
 }
