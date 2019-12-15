@@ -1,7 +1,7 @@
 <template>
   <div class="titleBox">
     <div class="img_box">
-      <img :src="seriesImage" alt="作品画像" width="100%">
+      <img v-lazy="seriesImage" alt="作品画像" width="100%">
     </div>
     <div class="description_box">
       <h3>{{title}}</h3>

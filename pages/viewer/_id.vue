@@ -38,7 +38,7 @@
           <p class="page_progress"><b-button @click="nextPage()">＜</b-button><input :value="nowReading" id="progress" style="display: inline; width: 100px;" /> / {{data.pageNum - 1}} <b-button @click="jumpToPage()">GO</b-button><b-button @click="backPage()">＞</b-button></p>
         </div>
         <div class="sns">
-          <b-button>共有</b-button>
+          <a href="https://twitter.com/share" :data-text="data.title" :data-url="location"><b-button v-b-popover.hover.top="'ツイートしよう！'">ツイート</b-button></a>
         </div>
       </div>
     </div>
@@ -204,9 +204,11 @@ export default {
   mounted() {
     this.$nextTick(function() {
       if(this.$store.state.viewer_direction == 'vertical') {
-        let tmp = document.getElementById(window.location.hash.replace("#", ""));
-        tmp.scrollIntoView();
-        this.getLocate();
+        if(window.location.hash) {
+          let tmp = document.getElementById(window.location.hash.replace("#", ""));
+          tmp.scrollIntoView();
+          this.getLocate();
+        }
       }
     })
   },
@@ -221,10 +223,6 @@ export default {
 </script>
 
 <style>
-
-.viewer_main {
-
-}
 
 .manga_images_vertical {
   width: 100%;
