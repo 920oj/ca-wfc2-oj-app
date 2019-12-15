@@ -56,6 +56,7 @@ export default {
       isLastPage: false,
       isFinished: false,
       menuOpacity: 0,
+      readDirection: this.$store.state.viewer_direction,
     }
   },
   methods: {
@@ -118,10 +119,37 @@ export default {
         return false
       }
     },
+    getLocate() {
+      const boxes = document.querySelectorAll(".manga_images_box");
+      const options = {
+        root: null,
+        rootMargin: "-50% 0px",
+        threshold: 0
+      };
+      console.log(document.querySelectorAll(".manga_images_box"));
+      const observer = new IntersectionObserver(doWhenIntersect, options);
+      boxes.forEach(box => {
+        observer.observe(box);
+      });
+      const self = this;
+      function doWhenIntersect(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            console.log(entry.target.id.replace("image_", ""));
+            self.nowReading = Number(entry.target.id.replace("image_", ""));
+            history.replaceState(null, null, "#image_" + self.nowReading);
+          }
+        });
+      }
+    },
     async switchReadingStyle() {
       if(this.$store.state.viewer_direction == 'horizontal') { // 横→縦
-      console.log("横→縦にします");
+        history.replaceState(null, null, "#image_" + this.nowReading);
         await this.$store.commit("setDirection", 'vertical');
+        this.getLocate();
+        this.readDirection = 'vertical';
+      } 
+      else if(this.$store.state.viewer_direction == 'vertical') { // 縦→横
         if(this.nowReading == 0) {
           this.isTopPage = true;
           this.isLastPage = false;
@@ -134,39 +162,18 @@ export default {
             this.nowReading -= 1;
           }
         }
-      } 
-      else if(this.$store.state.viewer_direction == 'vertical') { // 縦→横
+        history.replaceState(null, null, "#image_" + this.nowReading);
         await this.$store.commit("setDirection", 'horizontal');
+        this.readDirection = 'horizontal';
       }
-
-      // if(!this.$store.state.viewer_direction_horizontal) { // 横から縦にするとき
-      //   history.replaceState(null, null, "#image_" + this.nowReading);
-
-      //   const boxes = document.querySelectorAll(".manga_images_box");
-      //   const options = {
-      //     root: null,
-      //     rootMargin: "-50% 0px",
-      //     threshold: 0
-      //   };
-      //   console.log(document.querySelectorAll(".manga_images_box"));
-      //   const observer = new IntersectionObserver(doWhenIntersect, options);
-      //   boxes.forEach(box => {
-      //     observer.observe(box);
-      //   });
-      //   const self = this;
-      //   function doWhenIntersect(entries) {
-      //     entries.forEach(entry => {
-      //       if (entry.isIntersecting) {
-      //         console.log(entry.target.id.replace("image_", ""));
-      //         self.nowReading = Number(entry.target.id.replace("image_", ""));
-      //         history.replaceState(null, null, "#image_" + self.nowReading);
-      //       }
-      //     });
-      //   }
-
-      // }
     }
     
+  },
+  updated: function() {
+    if(this.$store.state.viewer_direction == 'vertical') {
+      let tmp = document.getElementById("image_" + this.nowReading);
+      tmp.scrollIntoView();
+    }
   },
   watch: {
     nowReading: function() {
@@ -183,6 +190,10 @@ export default {
       } else {
         this.isLastPage = false;
       }
+    },
+    readDirection: function() {
+      if(this.readDirection == 'vertical') {
+      }
     }
   },
   created: function() {
@@ -190,12 +201,23 @@ export default {
       this.$store.commit('setDirection', localStorage.viewer_direction);
     }
   },
+  mounted() {
+    this.$nextTick(function() {
+      if(this.$store.state.viewer_direction == 'vertical') {
+        let tmp = document.getElementById(window.location.hash.replace("#", ""));
+        tmp.scrollIntoView();
+        this.getLocate();
+      }
+    })
+  },
   async asyncData({ $axios, params }) {
     const mangaData = await $axios.get(`https://wfc2-image-api-259809.appspot.com/api/books/${params.id}`);
     console.log(mangaData);
     return { data: mangaData.data };
   }
 }
+
+
 </script>
 
 <style>
