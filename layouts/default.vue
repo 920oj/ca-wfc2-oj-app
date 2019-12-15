@@ -10,6 +10,7 @@
 <style>
 .default_style {
   background: #F6F6F4;
+  font-family: 'Noto Sans JP', sans-serif;
 }
 </style>
 
