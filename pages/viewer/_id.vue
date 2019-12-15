@@ -5,13 +5,13 @@
     </div>
     <div class="viewer_main">
       <!-- 縦読み設定時ビューア -->
-      <div class="image_area_vertical" v-if="!$store.state.viewer_direction_horizontal">
+      <div class="image_area_vertical" v-if="$store.state.viewer_direction == 'vertical'">
         <div v-for="(item, index) in data.imageData" :key="index">
           <img v-lazy="item.imageUrl" alt="" class="manga_images_vertical manga_images_box" :id="'image_' + index" width="100%">
         </div>
       </div>
       <!-- 横読み設定時ビューア -->
-      <div class="image_area_horizontal" v-if="$store.state.viewer_direction_horizontal">
+      <div class="image_area_horizontal" v-if="$store.state.viewer_direction == 'horizontal'">
         <!-- 表紙表示 -->
         <img :src="data.imageData[0].imageUrl" alt="" class="manga_images_horizontal" v-if="isTopPage" @click="nextPage()">
 
@@ -119,47 +119,52 @@ export default {
       }
     },
     async switchReadingStyle() {
-      await this.$store.commit('switch');
-      if(this.$store.state.viewer_direction_horizontal) { // 縦から横にするとき
-        if(!this.nowReading == 0){
+      if(this.$store.state.viewer_direction == 'horizontal') { // 横→縦
+      console.log("横→縦にします");
+        await this.$store.commit("setDirection", 'vertical');
+        if(this.nowReading == 0) {
+          this.isTopPage = true;
+          this.isLastPage = false;
+          this.isFinished = false;
+        } else {
           this.isTopPage = false;
           this.isFinished = false;
           this.isLastPage = false;
           if(this.nowReading % 2 == 0){
             this.nowReading -= 1;
           }
-        } else {
-          this.isTopPage = true;
-          this.isFinished = false;
-          this.isLastPage = false;
         }
+      } 
+      else if(this.$store.state.viewer_direction == 'vertical') { // 縦→横
+        await this.$store.commit("setDirection", 'horizontal');
       }
-      if(!this.$store.state.viewer_direction_horizontal) { // 横から縦にするとき
-        history.replaceState(null, null, "#image_" + this.nowReading);
 
-        const boxes = document.querySelectorAll(".manga_images_box");
-        const options = {
-          root: null,
-          rootMargin: "-50% 0px",
-          threshold: 0
-        };
-        console.log(document.querySelectorAll(".manga_images_box"));
-        const observer = new IntersectionObserver(doWhenIntersect, options);
-        boxes.forEach(box => {
-          observer.observe(box);
-        });
-        const self = this;
-        function doWhenIntersect(entries) {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              console.log(entry.target.id.replace("image_", ""));
-              self.nowReading = Number(entry.target.id.replace("image_", ""));
-              history.replaceState(null, null, "#image_" + self.nowReading);
-            }
-          });
-        }
+      // if(!this.$store.state.viewer_direction_horizontal) { // 横から縦にするとき
+      //   history.replaceState(null, null, "#image_" + this.nowReading);
 
-      }
+      //   const boxes = document.querySelectorAll(".manga_images_box");
+      //   const options = {
+      //     root: null,
+      //     rootMargin: "-50% 0px",
+      //     threshold: 0
+      //   };
+      //   console.log(document.querySelectorAll(".manga_images_box"));
+      //   const observer = new IntersectionObserver(doWhenIntersect, options);
+      //   boxes.forEach(box => {
+      //     observer.observe(box);
+      //   });
+      //   const self = this;
+      //   function doWhenIntersect(entries) {
+      //     entries.forEach(entry => {
+      //       if (entry.isIntersecting) {
+      //         console.log(entry.target.id.replace("image_", ""));
+      //         self.nowReading = Number(entry.target.id.replace("image_", ""));
+      //         history.replaceState(null, null, "#image_" + self.nowReading);
+      //       }
+      //     });
+      //   }
+
+      // }
     }
     
   },
@@ -181,6 +186,9 @@ export default {
     }
   },
   created: function() {
+    if(localStorage.viewer_direction) {
+      this.$store.commit('setDirection', localStorage.viewer_direction);
+    }
   },
   async asyncData({ $axios, params }) {
     const mangaData = await $axios.get(`https://wfc2-image-api-259809.appspot.com/api/books/${params.id}`);

@@ -1,13 +1,12 @@
 export const state = () => ({
-  viewer_direction_horizontal: true,
+  viewer_direction: 'horizontal',
 })
 
 export const mutations = {
-  switch(state) {
-    if(state.viewer_direction_horizontal){
-      state.viewer_direction_horizontal = false;
-    } else {
-      state.viewer_direction_horizontal = true;
-    }
-  },
+  setDirection(state, set) {
+    console.log(set);
+    state.viewer_direction = set;
+    localStorage.viewer_direction = set;
+  }
+
 }
