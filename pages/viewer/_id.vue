@@ -35,7 +35,7 @@
           <b-button @click="switchReadingStyle()">縦・横切り替え</b-button>
         </div>
         <div class="jump">
-          <p class="page_progress"><b-button @click="nextPage()">＜</b-button><input :value="nowReading" id="progress" style="display: inline; width: 100px;" /> / {{data.pageNum - 1}} <b-button @click="jumpToPage()">GO</b-button> <b-button @click="backPage()">＞</b-button></p>
+          <p class="page_progress"><b-button @click="nextPage()">＜</b-button><input :value="nowReading" id="progress" style="display: inline; width: 100px;" /> / {{data.pageNum - 1}} <b-button @click="jumpToPage()">GO</b-button><b-button @click="backPage()">＞</b-button></p>
         </div>
         <div class="sns">
           <b-button>共有</b-button>
@@ -135,6 +135,8 @@ export default {
         }
       }
       if(!this.$store.state.viewer_direction_horizontal) { // 横から縦にするとき
+        history.replaceState(null, null, "#image_" + this.nowReading);
+
         const boxes = document.querySelectorAll(".manga_images_box");
         const options = {
           root: null,
@@ -152,9 +154,11 @@ export default {
             if (entry.isIntersecting) {
               console.log(entry.target.id.replace("image_", ""));
               self.nowReading = Number(entry.target.id.replace("image_", ""));
+              history.replaceState(null, null, "#image_" + self.nowReading);
             }
           });
         }
+
       }
     }
     

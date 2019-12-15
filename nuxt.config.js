@@ -30,7 +30,8 @@ export default {
   */
   plugins: [
     '~/plugins/vue-lazyload.js',
-    '~/plugins/vue2-touch-events.js'
+    '~/plugins/vue2-touch-events.js',
+    '~/plugins/vue-scrollto.js'
   ],
   /*
   ** Nuxt.js dev-modules
